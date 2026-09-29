@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model ShareEvent {
+  id        Int      @id @default(autoincrement())
+  path      String
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  detail    String
+  createdAt DateTime @default(now())
+}
