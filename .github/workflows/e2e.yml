@@ -42,8 +42,14 @@ jobs:
         if: ${{ env.BASE_URL == 'http://127.0.0.1:4173' }}
         run: |
           npx --yes serve site -l 4173 --no-port-switching &
-          sleep 2
-          curl -fsS "$BASE_URL" >/dev/null
+          for i in $(seq 1 30); do
+            if curl -fsS "$BASE_URL" >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "site did not start on 4173"
+          exit 1
 
       - name: Run smoke
         run: npm run test:smoke
