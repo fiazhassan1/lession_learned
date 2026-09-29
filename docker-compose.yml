@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qaitek
+      POSTGRES_PASSWORD: qaitek
+      POSTGRES_DB: qaitek
+    ports:
+      - "5432:5432"
+    volumes:
+      - qaitek_pg:/var/lib/postgresql/data
+
+volumes:
+  qaitek_pg:

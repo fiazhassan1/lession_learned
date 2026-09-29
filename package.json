@@ -1,0 +1,22 @@
+{
+  "name": "qaitek",
+  "version": "0.1.0",
+  "private": true,
+  "description": "QAITEK site, API, and Playwright suites",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/smoke",
+    "test:e2e": "playwright test tests/e2e",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "lint:tests": "playwright test --list",
+    "api:test": "node --test apps/api/src/leads.test.js",
+    "api:dev": "node apps/api/src/server.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.2"
+  }
+}
