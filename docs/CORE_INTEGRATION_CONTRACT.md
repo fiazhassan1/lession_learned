@@ -1,0 +1,40 @@
+# Enterprise AI Chatbot core — verified integration contract (draft)
+
+Status: **discovery only. Nothing is integrated into Lessons Learned yet.**
+Source: read-only inspection of `QAITEK/enterprise-ai-chatbot` at commit `c3ce648a36e3fa852a1effe650f189d8c90d064e` (2026-09-24). Only code and comments in that commit were used; nothing below comes from planned/unbuilt features.
+
+## Core version identity
+
+- No release tag or core version exists that I could verify. `apps/api` and `packages/shared` are `0.1.0`, `apps/web` is `0.0.0` (package.json only).
+- Per docs/SHARED_AI_INTEGRATION_AND_ROLES.md, the pin is therefore the **exact core commit SHA**. Current candidate pin: `c3ce648a36e3fa852a1effe650f189d8c90d064e`.
+
+## What exists (verified in code)
+
+| Capability | Evidence |
+| --- | --- |
+| Drop-in embed bundle: one self-mounting IIFE `widget.js` that injects its own CSS and container | `apps/web/src/widget/embed.tsx`, `apps/web/vite.widget.config.ts`; built with `npm run build:widget` in `apps/web` → `dist-widget/widget.js` |
+| Anonymous visitor identity by `externalUserRef`, no cookie | `apps/web/src/api/client.ts` (`credentials: "omit"` for widget calls); `POST /api/v1/conversations` accepts optional `externalUserRef` |
+| Public widget routes with reflect-any-origin, credential-free CORS | `apps/api/src/app.ts` `PUBLIC_WIDGET_ROUTE_PATTERNS` (bot-config/public, conversation create, message send/SSE); all other routes are single-origin credentialed |
+| Branding from the API (name, colors, avatar, status text, platform name) | `GET /api/v1/bot-config/public` |
+| Rate limiting on the anonymous routes | bot-config/public 60/min; conversation create 20/min (`apps/api/src/routes/`) |
+| Streaming replies | SSE on `POST /api/v1/conversations/{id}/messages` |
+
+## Gaps that affect Lessons Learned (verified in code)
+
+1. **No multi-tenancy.** `getOrCreateDefaultTenant` returns the first row in `tenant` (`apps/api/src/services/tenant.ts`). The embed reads `data-tenant` but deliberately ignores it (`embed.tsx` comment: multi-tenant resolution is "Phase 3 scope"). Therefore **per-project branding, knowledge base and conversation isolation for Lessons Learned is not available** from one shared deployment today. Lessons Learned would share QAITEK's tenant, bot config and knowledge.
+2. **API origin is fixed at build time.** `apps/web/src/api/client.ts`: `API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000"`. The embed has no runtime `data-api` attribute. Each deployment target needs its own `widget.js` built with `VITE_API_URL` set to the real API origin.
+3. **No hosted core.** No deployed API URL is recorded in the repo. The API needs Node + PostgreSQL/pgvector (`infra/docker-compose.yml`) and cannot run on Hostinger static/shared hosting (see docs/HOSTINGER_DEPLOYMENT.md). Only the static `widget.js` file could be hosted there.
+4. **No published artifact/versioning mechanism.** `widget.js` is built from source; there is no npm package, CDN path, changelog or compatibility matrix.
+5. **Anonymous write surface.** Reflect-any-origin CORS plus rate limits is the only abuse control visible for widget routes. Allowed-origin allowlisting per project does not exist.
+
+## Proposed project-side contract (NOT implemented — needs Fiaz/BA decision)
+
+- Lessons Learned loads `widget.js` from a URL built from a pinned core SHA, configured via a single project config file, never with secrets in browser code (none are required by the public routes).
+- Compatibility test (Playwright, against a local core instance or a stub that mirrors the three public routes): widget mounts, `bot-config/public` branding renders, a message round-trips over SSE, failure UI appears when the API is down, page still works without the widget.
+- Upgrade = bump pinned SHA, rebuild `widget.js`, run the compatibility test plus LL smoke/e2e, Fiaz acceptance for UI impact. Rollback = revert the pin and the published `widget.js`.
+
+## Decisions needed before any integration code is written
+
+1. Is sharing QAITEK's single default tenant acceptable for Lessons Learned, or is multi-tenancy (core Phase 3) a prerequisite? Until answered, per-project branding/knowledge isolation **cannot** be claimed.
+2. Where will the core API be hosted (a real `VITE_API_URL`), and who owns building/publishing `widget.js` for it?
+3. Should the core gain a runtime `data-api` (and eventually `data-tenant`) option, or should Lessons Learned build its own bundle per environment? The first requires a change in the core repo, which LL-002 does not authorize.
