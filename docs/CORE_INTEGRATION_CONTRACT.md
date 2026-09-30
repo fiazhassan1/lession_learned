@@ -30,8 +30,11 @@ Source: read-only inspection of `QAITEK/enterprise-ai-chatbot` at commit `c3ce64
 ## Proposed project-side contract (NOT implemented — needs Fiaz/BA decision)
 
 - Lessons Learned loads `widget.js` from a URL built from a pinned core SHA, configured via a single project config file, never with secrets in browser code (none are required by the public routes).
-- Compatibility test (Playwright, against a local core instance or a stub that mirrors the three public routes): widget mounts, `bot-config/public` branding renders, a message round-trips over SSE, failure UI appears when the API is down, page still works without the widget.
-- Upgrade = bump pinned SHA, rebuild `widget.js`, run the compatibility test plus LL smoke/e2e, Fiaz acceptance for UI impact. Rollback = revert the pin and the published `widget.js`.
+- Two separate test layers, never interchangeable:
+  1. **Deterministic client/failure tests** (Playwright against a project-maintained stub of the public routes): widget mounts, branding renders from a canned `bot-config/public`, failure UI appears when the API is down, page still works without the widget. A stub only reproduces this project's own assumptions, so it **cannot** show compatibility with the core and must never be cited as integration or upgrade evidence.
+  2. **Core contract/integration check against the actual pinned core build** (the real API at the pinned SHA, with a controlled/mock LLM provider if needed to keep it deterministic): real `bot-config/public` response shape, conversation create, and a message round-trip over real SSE. This is the only gate that may support a claim of "integrated" or "upgrade-compatible".
+- If the environment for layer 2 (core build, PostgreSQL/pgvector, controlled LLM provider) is unavailable, the gate is recorded as **BLOCKED**, not passed, and integration/upgrade is not claimed.
+- Upgrade = bump pinned SHA, rebuild `widget.js`, run layer 1 + layer 2 + LL smoke/e2e, Fiaz acceptance for UI impact. Rollback = revert the pin and the published `widget.js`.
 
 ## Decisions needed before any integration code is written
 
