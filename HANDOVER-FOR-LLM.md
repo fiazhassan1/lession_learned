@@ -1,3 +1,5 @@
+> **Onboarding update — 2026-09-30:** Read AI_DEVELOPMENT_SOP.md, CLAUDE.md and docs/PROJECT_STATUS.md first. This file is historical context. The SOP governs workflow; branch/PR review supersedes any older instruction to commit directly to main. The inspected site/ files are starter fixtures, not the finished Lessons Learned design. Preserve established product rules until an approved change reconciles them. Fiaz remains business acceptance authority.
+
 # Handover: Lessons Learned Global (`lession_learned`)
 
 Read this before changing anything. This is the only project Grok was supposed to build in the late session. Do not treat the Enterprise AI Chatbot as this repo.
