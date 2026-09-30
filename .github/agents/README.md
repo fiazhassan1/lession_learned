@@ -1,9 +1,9 @@
-# Agentic QA loop (from AgentE2EQAWorkflow-Playwright)
+# Developer test-agent workflow
 
-Same three agents as https://github.com/fiazhassan1/AgentE2EQAWorkflow-Playwright
+The planner/generator/healer pattern referenced by this repository comes from fiazhassan1/AgentE2EQAWorkflow-Playwright. This README does not install agent definitions or guarantee those tools are available.
 
-1. playwright-test-planner — explore the app, write `specs/*.md`
-2. playwright-test-generator — turn one spec scenario into one `tests/**/*.spec.ts`
-3. playwright-test-healer — run, debug, patch until green (or `test.fixme`)
+- Planner: explore approved acceptance criteria and produce a test plan.
+- Generator: implement meaningful scenarios in tests/.
+- Healer: diagnose failures and fix their causes; keep product defects visible and do not conceal them with test.fixme/skips.
 
-Orchestration prompt: `QAEnd2EndPromptFile.md` in this repo (Lessons Learned variant).
+Read AI_DEVELOPMENT_SOP.md and QAEnd2EndPromptFile.md. These capabilities are Claude's developer tooling, not independent ChatGPT approval. Use branches/PRs, record exact SHA and test evidence, and leave merging to independent AI QA after applicable gates pass.
