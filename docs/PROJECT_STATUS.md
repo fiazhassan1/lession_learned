@@ -23,8 +23,8 @@ This task inspected source and CI history; it did not execute product/browser te
 - The finished Lessons Learned website package described in prior discussion is not in the inspected repository. It was not located in the accessible file search/workspace during onboarding; its existence elsewhere is unresolved.
 - No real OG image asset is present. HTTPS URL metadata alone does not validate image availability or dimensions.
 - Root package.json, several docs and the fixtures still use QAITEK terminology. Treat these as starter leftovers requiring deliberate reconciliation, not approved Lessons Learned marketing content.
-- No root package-lock.json was present; the current workflow uses npm install, not npm ci.
-- API health tests skip both connection failures and non-OK responses. CI does not start the optional API or run npm run api:test. Green fixture CI does not establish backend health or persistence.
+- Resolved after onboarding: a root package-lock.json is committed and CI uses `npm ci`.
+- Resolved for CI after onboarding: CI runs `npm run api:test`, starts the in-memory API and sets `API_REQUIRED=1`, so the health spec fails rather than skips there. Locally it still skips when the API is down. Green CI still does not establish persistence (the store is in-memory) or completed-site acceptance.
 - The in-memory API is not connected to a finished visitor submission form and is not a production lead service.
 - Hostinger plan capacity, additional website creation, DNS, SSL, aliases and go-live remain unverified.
 

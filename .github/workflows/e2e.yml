@@ -30,10 +30,13 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: package.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: API unit tests
+        run: npm run api:test
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
@@ -51,10 +54,25 @@ jobs:
           echo "site did not start on 4173"
           exit 1
 
+      - name: Start optional API (health check is required in CI)
+        run: |
+          node apps/api/src/server.js > api.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not start on 3001"
+          cat api.log
+          exit 1
+
       - name: Run smoke
         run: npm run test:smoke
 
       - name: Run e2e
+        env:
+          API_REQUIRED: "1"
         run: npm run test:e2e
 
       - name: Upload Playwright report
