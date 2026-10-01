@@ -3,11 +3,22 @@ import { createLeadStore, validateLead } from "./leads.js";
 
 const port = Number(process.env.PORT ?? 3001);
 const store = createLeadStore();
+// A lead is a few hundred bytes; cap the body so the public endpoint cannot be
+// used to buffer arbitrarily large payloads in memory.
+const MAX_BODY_BYTES = 16 * 1024;
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on("data", (c) => chunks.push(c));
+    let size = 0;
+    req.on("data", (c) => {
+      size += c.length;
+      if (size > MAX_BODY_BYTES) {
+        chunks.length = 0;
+        return reject(new Error("payload_too_large"));
+      }
+      chunks.push(c);
+    });
     req.on("end", () => {
       const raw = Buffer.concat(chunks).toString("utf8");
       if (!raw) return resolve({});
@@ -21,9 +32,10 @@ function readBody(req) {
   });
 }
 
-function send(res, status, payload) {
+function send(res, status, payload, extraHeaders = {}) {
   const body = JSON.stringify(payload);
   res.writeHead(status, {
+    ...extraHeaders,
     "content-type": "application/json",
     "content-length": Buffer.byteLength(body),
     "access-control-allow-origin": "*",
@@ -51,7 +63,10 @@ export const server = http.createServer(async (req, res) => {
     let body;
     try {
       body = await readBody(req);
-    } catch {
+    } catch (error) {
+      if (error.message === "payload_too_large") {
+        return send(res, 413, { ok: false, error: "payload_too_large" }, { connection: "close" });
+      }
       return send(res, 400, { ok: false, error: "invalid_json" });
     }
     const parsed = validateLead(body);
