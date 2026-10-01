@@ -55,10 +55,10 @@ Current CI runs `npm ci`, `api:test`, starts the in-memory API and requires its 
 ## Stub-level check of the shared chatbot widget (opt-in, not CI)
 
 ```bash
-# CORE_DIR = a checkout or `git archive` export of the pinned core commit, with `npm ci` done
+# CORE_DIR = a git checkout of QAITEK/enterprise-ai-chatbot at the pinned SHA, clean tracked tree, `npm ci` done
 CORE_DIR=/path/to/core npm run core:stub-check
 ```
 
-Builds the core's `widget.js` into a temp directory with `VITE_API_URL` pointing at a project-owned stub API, loads it on a third-party-origin host page in Chromium, and asserts: bundle builds, API origin is baked in, no runtime `data-api` option, `#widget-root` mounts with content, no page errors, and `GET /api/v1/bot-config/public` is requested cross-origin. Set `CHROMIUM_EXE` to use a specific browser. Exit codes: 0 stub-level pass, 1 failed assertion, 2 BLOCKED (missing prerequisite; never report as a pass).
+Builds the core's `widget.js` into a temp directory with `VITE_API_URL` pointing at a project-owned stub API, loads it on a third-party-origin host page in Chromium, and asserts: bundle builds, API origin is baked in, `#widget-root` mounts with content, no page errors, `GET /api/v1/bot-config/public` is requested cross-origin, and a decoy `data-api` attribute on the host script is ignored (a second stub server must receive zero requests). The core identity is verified first: `git rev-parse HEAD` must equal the pin in the script (`c3ce648a36e3fa852a1effe650f189d8c90d064e`; override with `CORE_EXPECTED_SHA` only when deliberately bumping the pin through the upgrade procedure) and tracked files must be unmodified. Set `CHROMIUM_EXE` to use a specific browser. Exit codes: 0 stub-level pass, 1 failed assertion or runtime error, 2 BLOCKED (not a git checkout, wrong ref, modified tracked files, missing dependencies or unavailable Chromium; never report as a pass). Servers, browser and the temp build directory are cleaned up on every path.
 
 This is **not** integration or upgrade evidence: the stub returns a canned config, so real response shape, conversation creation, SSE, branding and upgrade compatibility remain a separate gate that is BLOCKED until a real pinned core build is available (see docs/CORE_INTEGRATION_CONTRACT.md).
