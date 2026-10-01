@@ -70,3 +70,7 @@ Shared enterprise chatbot integration and an upgrade path are baseline requireme
 This overrides the original reference SOP's Fiaz-only merge rule. The assigned independent AI QA reviewer performs the merge after required checks pass. For changes with no UI and no frontend acceptance path, one independent AI review plus required tests/CI is sufficient; a second Fiaz review is not required. UI changes retain applicable Fiaz manual acceptance. The developer must not self-approve or self-merge. New commits after review require verification of the new head. Production release remains separately authorized.
 
 Lessons Learned roles: Claude develops and runs STED automation QA; ChatGPT handles BA and independent QA. ChatGPT authored this onboarding documentation, so Claude may independently review and merge this documentation checkpoint. ChatGPT cannot independently approve its own contribution.
+
+## Interim QA/STAGING decision — 2026-10-01
+
+Fiaz approves the Mac Mini as separate QA/STAGING until production is complete. [docs/INTERIM_QA_STAGING.md](docs/INTERIM_QA_STAGING.md) defines isolation, reproducibility, evidence and release boundaries. Production/VPS setup does not block development or available testing. Keep genuinely environment-specific checks pending until run. This does not change Lessons Learned's approved production hosting intent or authorize deployment.

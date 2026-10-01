@@ -36,3 +36,7 @@ Do not fabricate missing website copy, images, source packages, contacts or prod
 The existing agent planner/generator/healer descriptions do not guarantee those tools are installed. Use available tools; internal agent results remain developer evidence.
 
 For this onboarding documentation checkpoint only, ChatGPT is the author and you are its independent reviewer. Review consistency and required checks; you may merge after those pass under Fiaz's latest rule. Subsequent implementation returns to your developer role, with independent ChatGPT QA.
+
+## Approved interim environment policy
+
+Fiaz's 2026-10-01 decision: use the Mac Mini as separate QA/STAGING until production is ready. Read [docs/INTERIM_QA_STAGING.md](docs/INTERIM_QA_STAGING.md). VPS go-live and production setup must not block ongoing development or available local/CI/QA testing. Keep environment-specific pending checks explicit; preserve existing review, safety and release gates.
