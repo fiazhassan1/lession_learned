@@ -19,6 +19,19 @@ Source: read-only inspection of `QAITEK/enterprise-ai-chatbot` at commit `c3ce64
 | Rate limiting on the anonymous routes | bot-config/public 60/min; conversation create 20/min (`apps/api/src/routes/`) |
 | Streaming replies | SSE on `POST /api/v1/conversations/{id}/messages` |
 
+## Build and mount verification (executed 2026-10-01; stub-level, NOT integration evidence)
+
+Run against a scratch export of core commit `c3ce648a36e3fa852a1effe650f189d8c90d064e` (`git archive`; the core repo was not modified). Node 24, `npm ci --ignore-scripts`, then from `apps/web`: `VITE_API_URL=<origin> npx vite build -c vite.widget.config.ts`.
+
+| Check | Result |
+| --- | --- |
+| Bundle builds from the pinned commit | Yes: `dist-widget/widget.js` 345,329 bytes (about 106 KB gzip) |
+| API origin is baked at build time | Confirmed: the literal `VITE_API_URL` value is present in the bundle; no runtime `data-api`/`dataset.api` option exists |
+| Mounts on a third-party-origin host page | Yes, in Chromium: `#widget-root` created with content, 0 page errors |
+| First network call | `GET <baked origin>/api/v1/bot-config/public`, cross-origin (`Origin` = host page) |
+
+Limits of this check: the API was a 10-line stub returning a canned `bot-config/public`, so it proves only that the bundle builds, mounts and issues that request. It does **not** prove real response-shape compatibility, conversation creation, SSE streaming, branding, or any upgrade compatibility; those remain the BLOCKED real-core gate below. Nothing from this run is committed (no build output or `node_modules`).
+
 ## Gaps that affect Lessons Learned (verified in code)
 
 1. **No multi-tenancy.** `getOrCreateDefaultTenant` returns the first row in `tenant` (`apps/api/src/services/tenant.ts`). The embed reads `data-tenant` but deliberately ignores it (`embed.tsx` comment: multi-tenant resolution is "Phase 3 scope"). Therefore **per-project branding, knowledge base and conversation isolation for Lessons Learned is not available** from one shared deployment today. Lessons Learned would share QAITEK's tenant, bot config and knowledge.
