@@ -30,7 +30,7 @@ Run against a scratch export of core commit `c3ce648a36e3fa852a1effe650f189d8c90
 | Mounts on a third-party-origin host page | Yes, in Chromium: `#widget-root` created with content, 0 page errors |
 | First network call | `GET <baked origin>/api/v1/bot-config/public`, cross-origin (`Origin` = host page) |
 
-Limits of this check: the API was a 10-line stub returning a canned `bot-config/public`, so it proves only that the bundle builds, mounts and issues that request. It does **not** prove real response-shape compatibility, conversation creation, SSE streaming, branding, or any upgrade compatibility; those remain the BLOCKED real-core gate below. Nothing from this run is committed (no build output or `node_modules`).
+Limits of this check: the API was a 10-line stub returning a canned `bot-config/public`, so it proves only that the bundle builds, mounts and issues that request. It does **not** prove real response-shape compatibility, conversation creation, SSE streaming, branding, or any upgrade compatibility; those remain the BLOCKED real-core gate below. The check is now retained as a reproducible, opt-in script: `CORE_DIR=<core checkout or export with `npm ci` done> npm run core:stub-check` (`scripts/core-widget-stub-check.mjs`; exit 0 = stub-level pass, 1 = assertion failed, 2 = BLOCKED prerequisite missing). It builds to a temp directory and does not modify `CORE_DIR`. It is not part of CI because it needs a core checkout. No build output or `node_modules` is committed.
 
 ## Gaps that affect Lessons Learned (verified in code)
 

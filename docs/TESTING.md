@@ -51,3 +51,14 @@ Do not use a production BASE_URL or submit real leads without explicit authoriza
 ## Limits of current green CI
 
 Current CI runs `npm ci`, `api:test`, starts the in-memory API and requires its `/health` (API_REQUIRED=1), then runs the fixture smoke/e2e. It still does not test persistence, a real site or the chatbot core. OG tests primarily check metadata; the placeholder remote image is not a verified share card. Report required blocked checks as blocked, not passed.
+
+## Stub-level check of the shared chatbot widget (opt-in, not CI)
+
+```bash
+# CORE_DIR = a checkout or `git archive` export of the pinned core commit, with `npm ci` done
+CORE_DIR=/path/to/core npm run core:stub-check
+```
+
+Builds the core's `widget.js` into a temp directory with `VITE_API_URL` pointing at a project-owned stub API, loads it on a third-party-origin host page in Chromium, and asserts: bundle builds, API origin is baked in, no runtime `data-api` option, `#widget-root` mounts with content, no page errors, and `GET /api/v1/bot-config/public` is requested cross-origin. Set `CHROMIUM_EXE` to use a specific browser. Exit codes: 0 stub-level pass, 1 failed assertion, 2 BLOCKED (missing prerequisite; never report as a pass).
+
+This is **not** integration or upgrade evidence: the stub returns a canned config, so real response shape, conversation creation, SSE, branding and upgrade compatibility remain a separate gate that is BLOCKED until a real pinned core build is available (see docs/CORE_INTEGRATION_CONTRACT.md).
