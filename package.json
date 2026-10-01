@@ -11,7 +11,7 @@
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
     "lint:tests": "playwright test --list",
-    "api:test": "node --test apps/api/src/leads.test.js",
+    "api:test": "node --test apps/api/src/leads.test.js apps/api/src/server.test.js",
     "api:dev": "node apps/api/src/server.js"
   },
   "devDependencies": {
