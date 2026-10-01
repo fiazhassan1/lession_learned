@@ -26,7 +26,7 @@ Run against a scratch export of core commit `c3ce648a36e3fa852a1effe650f189d8c90
 | Check | Result |
 | --- | --- |
 | Bundle builds from the pinned commit | Yes: `dist-widget/widget.js` 345,329 bytes (about 106 KB gzip) |
-| API origin is baked at build time | Confirmed: the literal `VITE_API_URL` value is present in the bundle; no runtime `data-api`/`dataset.api` option exists |
+| API origin is baked at build time | Confirmed: the literal `VITE_API_URL` value is present in the bundle, and a decoy `data-api` attribute on the host script is ignored (behavioural check in `npm run core:stub-check`: a second stub server receives zero requests) |
 | Mounts on a third-party-origin host page | Yes, in Chromium: `#widget-root` created with content, 0 page errors |
 | First network call | `GET <baked origin>/api/v1/bot-config/public`, cross-origin (`Origin` = host page) |
 
