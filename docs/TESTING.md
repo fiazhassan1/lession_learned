@@ -27,7 +27,7 @@ npm run test:e2e
 
 lint:tests lists Playwright tests; it is not a code linter.
 Playwright starts site/ on port 4173 when the configured base URL is local. Verify any reused server serves this checkout.
-There was no root lockfile at onboarding; npm ci is not a valid baseline command yet.
+A root package-lock.json now exists; CI and clean-checkout baselines use `npm ci` (use `npm install` only when intentionally changing dependencies).
 
 To include local API health, start a second terminal first:
 
@@ -35,7 +35,7 @@ To include local API health, start a second terminal first:
 npm run api:dev
 ```
 
-Then run npm run test:e2e. The API is optional for static preview. The health spec currently skips unreachable/non-OK responses, so count and explain skips; do not treat that as a healthy API result. Its unit tests do not test HTTP persistence or production delivery.
+Then run npm run test:e2e. The API is optional for static preview. Locally the health spec skips when the API is unreachable/non-OK, so count and explain skips; a skip is not a healthy API result. With `API_REQUIRED=1` (set by CI, which starts the API) the same spec FAILS instead of skipping. Its unit tests do not test HTTP persistence or production delivery.
 
 ## Independent review and acceptance
 
@@ -50,4 +50,4 @@ Do not use a production BASE_URL or submit real leads without explicit authoriza
 
 ## Limits of current green CI
 
-Current CI covers the fixture, starts no API and does not invoke api:test. OG tests primarily check metadata; the placeholder remote image is not a verified share card. Report required blocked checks as blocked, not passed.
+Current CI runs `npm ci`, `api:test`, starts the in-memory API and requires its `/health` (API_REQUIRED=1), then runs the fixture smoke/e2e. It still does not test persistence, a real site or the chatbot core. OG tests primarily check metadata; the placeholder remote image is not a verified share card. Report required blocked checks as blocked, not passed.

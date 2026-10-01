@@ -20,12 +20,12 @@ Preserve files and unrelated changes. Do not delete files without explicit owner
 ## Current runnable paths
 
 - site/ contains two placeholder HTML pages, not the finished branded design.
-- npm install installs the root test dependencies; no root lockfile existed at onboarding.
+- npm ci installs the root test dependencies from the committed package-lock.json (npm install only to change dependencies).
 - npm run api:test runs the small Node unit suite.
 - npx playwright install chromium installs the configured browser.
 - npm run test:smoke and npm run test:e2e start the local site via Playwright on port 4173.
 - npm run api:dev starts the optional in-memory API on port 3001.
-- API health checks currently skip on an unavailable API or non-OK response. Report this limitation; it is not API acceptance.
+- API health check skips locally when the API is unavailable; in CI (API_REQUIRED=1, API started) it fails instead. A local skip is not API acceptance.
 - See docs/TESTING.md for preview and local evidence.
 
 ## Implementation rules
