@@ -1,0 +1,17 @@
+name: Agent policy verification
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  agent-policy:
+    name: Agent policy registration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify policy registration and relative links
+        run: python3 scripts/verify_agent_policy.py --root . --manifest policy/agent-policy.json
+      - name: Verify failure cases
+        run: python3 -m unittest discover -s policy/tests -p 'test_*.py'
