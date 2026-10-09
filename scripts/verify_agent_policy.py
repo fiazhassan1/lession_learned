@@ -10,6 +10,14 @@ import sys
 RULE_IDS = frozenset(("R1", "R2", "R3", "R4", "R5", "R6"))
 ENTRY_POINTS = frozenset(("AGENTS.md", "CLAUDE.md"))
 
+# Governance safety invariants: these mandatory artifacts and evidence cannot be disabled
+# by a manifest edit. Project-specific additions and business settings remain configurable.
+MANDATORY_FILES = frozenset(["docs/AI-OPERATING-RULES.md","docs/PROJECT-ROLES.md","docs/ENVIRONMENT-SETUP.md","docs/PROJECT-TASK-DISCIPLINE.md","docs/POLICY-RECOVERY-AUDIT.md"])
+MANDATORY_LINKS = frozenset((source, target) for source in ENTRY_POINTS
+                          for target in ("docs/AI-OPERATING-RULES.md", "docs/PROJECT-ROLES.md"))
+MANDATORY_RULE_PHRASES = {"R1":["next authorized step","during active sessions","unattended execution"],"R2":["Never use Fiaz as a messenger","durable handoff","not proof"],"R3":["user-only account consent","credentials entered privately","exact blocker"],"R4":["DONE, VERIFIED, PENDING and BLOCKED","exact commit SHA","next action and owner"],"R5":["approved role matrix","cannot independently approve or self-merge","new exact head"],"R6":["Remain in ChatGPT rather than Work","until Fiaz explicitly chooses otherwise","not user consent"]}
+MANDATORY_CONTENT = {"docs/AI-OPERATING-RULES.md":["Active in this repository when independently reviewed and merged","Cross-project adoption requires","Never delete anything","versioned configuration/settings","Google Drive","grants no live sending"],"docs/PROJECT-ROLES.md":["Claude / Claude Code","Codex","must not self-approve or self-merge"]}
+
 
 def verify(root, manifest):
     root = Path(root).resolve()
@@ -26,6 +34,11 @@ def verify(root, manifest):
     rules = config.get("rules", [])
     if {r["id"] for r in rules} != RULE_IDS or len(rules) != len(RULE_IDS):
         raise ValueError("Manifest must register each mandatory rule exactly once")
+    for rule in rules:
+        if not set(MANDATORY_RULE_PHRASES[rule["id"]]).issubset(rule.get("required_phrases", [])):
+            raise ValueError("Mandatory rule phrases removed: " + rule["id"])
+    if config.get("policy_path") != "docs/AI-OPERATING-RULES.md" or config.get("roles_path") != "docs/PROJECT-ROLES.md":
+        raise ValueError("Mandatory policy or role artifact redirected")
     entries = config.get("entry_points", [])
     if set(entries) != ENTRY_POINTS or len(entries) != len(ENTRY_POINTS):
         raise ValueError("Both agent entry points must be registered")
@@ -51,6 +64,14 @@ def verify(root, manifest):
     required = config.get("required_files", [])
     if not required or config["policy_path"] not in required or config["roles_path"] not in required:
         raise ValueError("Required files must include policy and roles")
+    if not MANDATORY_FILES.issubset(required):
+        raise ValueError("Mandatory required file removed")
+    coverage = {}
+    for item in config.get("content_checks", []):
+        coverage.setdefault(item["path"], set()).update(item.get("phrases", []))
+    for path, phrases in MANDATORY_CONTENT.items():
+        if not set(phrases).issubset(coverage.get(path, set())):
+            raise ValueError("Mandatory content check removed: " + path)
     texts = {}
     for name in set(required + entries):
         path = local(name)
@@ -80,6 +101,8 @@ def verify(root, manifest):
     links = config.get("required_links", [])
     if not links:
         raise ValueError("No link checks registered")
+    if not MANDATORY_LINKS.issubset({(item["from"], item["to"]) for item in links}):
+        raise ValueError("Mandatory entry-point policy/role link removed")
     covered = {item["from"] for item in links if item["to"] == config["policy_path"]}
     if not (ENTRY_POINTS - set(exc_by_path)).issubset(covered):
         raise ValueError("Both available entry points must link to the policy")

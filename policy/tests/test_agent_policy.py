@@ -101,6 +101,54 @@ class PolicyFailures(unittest.TestCase):
         self.save(root, config)
         self.assertEqual(self.verify(root), ([], ["CLAUDE.md"]))
 
+    def test_removing_each_required_file_from_manifest_fails(self):
+        for name in check.MANDATORY_FILES:
+            with self.subTest(name=name):
+                root, config = self.fixture()
+                config["required_files"].remove(name)
+                self.save(root, config)
+                with self.assertRaises(ValueError):
+                    self.verify(root)
+
+    def test_removing_each_required_link_from_manifest_fails(self):
+        for source, target in check.MANDATORY_LINKS:
+            with self.subTest(source=source, target=target):
+                root, config = self.fixture()
+                config["required_links"] = [x for x in config["required_links"]
+                                            if (x["from"], x["to"]) != (source, target)]
+                self.save(root, config)
+                with self.assertRaises(ValueError):
+                    self.verify(root)
+
+    def test_empty_content_checks_fail(self):
+        root, config = self.fixture()
+        config["content_checks"] = []
+        self.save(root, config)
+        with self.assertRaises(ValueError):
+            self.verify(root)
+
+    def test_removing_each_mandatory_content_phrase_fails(self):
+        for path, phrases in check.MANDATORY_CONTENT.items():
+            for phrase in phrases:
+                with self.subTest(path=path, phrase=phrase):
+                    root, config = self.fixture()
+                    for item in config["content_checks"]:
+                        if item["path"] == path:
+                            item["phrases"] = [x for x in item["phrases"] if x != phrase]
+                    self.save(root, config)
+                    with self.assertRaises(ValueError):
+                        self.verify(root)
+
+    def test_removing_each_mandatory_rule_phrase_fails(self):
+        for rule, phrases in check.MANDATORY_RULE_PHRASES.items():
+            for phrase in phrases:
+                with self.subTest(rule=rule, phrase=phrase):
+                    root, config = self.fixture()
+                    next(x for x in config["rules"] if x["id"] == rule)["required_phrases"].remove(phrase)
+                    self.save(root, config)
+                    with self.assertRaises(ValueError):
+                        self.verify(root)
+
 
 if __name__ == "__main__":
     unittest.main()
