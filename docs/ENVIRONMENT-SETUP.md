@@ -15,7 +15,7 @@ flowchart LR
   GH --> CI[GitHub Actions]
   QA[Independent other AI] --> GH
   GH --> E[Exact-SHA evidence]
-  E -. pending copy .-> D[Project Drive folder]
+  E --> D[Project Drive folder]
 ```
 
 ## 3. Existing environments — UNKNOWN
@@ -24,7 +24,7 @@ Why: no historical setup is verified by this audit. Who/when: Codex records gap,
 
 ## 4. Policy verification setup — IN PROGRESS
 
-Why: detect missing agent policies/links. Who/when: Codex, 9 October 2026. Steps: versioned manifest, Python standard-library checker, failure-case suite and read-only Actions workflow; developer checks before exact-head handoff. No dependency or account installation. Verification links/results recorded on candidate PR; independent review, merge/default-branch CI and Drive readback PENDING. Secret location: existing authorized stores, values not read/exported. Gotcha: local gh reports invalid credentials and Claude CLI signed out; connected GitHub is a separate verified boundary. Remaining owner: Claude independently reviews this Codex-authored checkpoint, permitted reviewer merges; Codex records source/CI/Drive evidence.
+Why: detect missing agent policies/links. Who/when: Codex, 9 October 2026. Steps: versioned manifest, Python standard-library checker, failure-case suite and read-only Actions workflow; developer checks before exact-head handoff. No dependency or account installation. Verification links/results recorded on candidate PR; independent review, merge/default-branch CI PENDING; Drive copy verified below. Secret location: existing authorized stores, values not read/exported. Gotcha: local gh reports invalid credentials and Claude CLI signed out; connected GitHub is a separate verified boundary. Remaining owner: Claude independently reviews this Codex-authored checkpoint, permitted reviewer merges; Codex records source/CI/Drive evidence.
 
 ## Appendix A. Reusable section template
 
@@ -46,4 +46,9 @@ Why: detect missing agent policies/links. Who/when: Codex, 9 October 2026. Steps
 
 ## Drive copy evidence
 
-PENDING until upload and readback in a verified project folder. A missing folder blocks this copy gate only; never claim mirroring from repository creation alone.
+DONE for the recorded candidate: Codex uploaded to the project folder and read back matching text (ignoring final newline), 10 October 2026 Asia/Karachi. [Existing same-file mirror](https://drive.google.com/file/d/1M7GnYsoxhEEXlFnGkSCaYer3Q4YasBAb/view). Source checkpoint 341090b7ea39264739a9ddba9b93fd0ff1c1ad5a; candidate is not merged adoption. Update this same Drive ID for later revisions; current-head merge/default-branch gates remain separate.
+
+
+## 5. Policy checker hardening — IN PROGRESS until independent adoption
+
+Why: manifest edits could remove mandatory evidence and still pass. Who/when: Codex, 10 October 2026 Asia/Karachi. Steps: enforce mandatory artifact/link/content/rule coverage, including no-switch and proper handover; run the 15-test regression suite and current-head policy CI. Developer checks PASS; independent review/merge/default-branch verification PENDING. No new accounts or dependencies installed. Secrets remain in existing approved stores; no values accessed. Gotcha: Claude's GBOB session reported its permission guard refuses writes to this repository. Reviewer must use an authorized session; a request or earlier-head review is not current-head approval. Evidence and next owner recorded in [portfolio tracker](https://github.com/QAITEK/GBOB_Automation/issues/84).
