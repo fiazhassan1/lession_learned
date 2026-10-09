@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "policy_path": "docs/AI-OPERATING-RULES.md",
+  "roles_path": "docs/PROJECT-ROLES.md",
+  "entry_points": [
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "required_files": [
+    "docs/AI-OPERATING-RULES.md",
+    "docs/PROJECT-ROLES.md",
+    "docs/ENVIRONMENT-SETUP.md",
+    "docs/PROJECT-TASK-DISCIPLINE.md",
+    "docs/POLICY-RECOVERY-AUDIT.md"
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "required_phrases": [
+        "next authorized step",
+        "during active sessions",
+        "unattended execution"
+      ]
+    },
+    {
+      "id": "R2",
+      "required_phrases": [
+        "Never use Fiaz as a messenger",
+        "durable handoff",
+        "not proof"
+      ]
+    },
+    {
+      "id": "R3",
+      "required_phrases": [
+        "user-only account consent",
+        "credentials entered privately",
+        "exact blocker"
+      ]
+    },
+    {
+      "id": "R4",
+      "required_phrases": [
+        "DONE, VERIFIED, PENDING and BLOCKED",
+        "exact commit SHA",
+        "next action and owner"
+      ]
+    },
+    {
+      "id": "R5",
+      "required_phrases": [
+        "approved role matrix",
+        "cannot independently approve or self-merge",
+        "new exact head"
+      ]
+    },
+    {
+      "id": "R6",
+      "required_phrases": [
+        "Remain in ChatGPT rather than Work",
+        "until Fiaz explicitly chooses otherwise",
+        "not user consent",
+        "Never suggest switching",
+        "proper handover"
+      ]
+    }
+  ],
+  "content_checks": [
+    {
+      "path": "docs/AI-OPERATING-RULES.md",
+      "phrases": [
+        "Active in this repository when independently reviewed and merged",
+        "Cross-project adoption requires",
+        "Never delete anything",
+        "versioned configuration/settings",
+        "Google Drive",
+        "grants no live sending"
+      ]
+    },
+    {
+      "path": "docs/PROJECT-ROLES.md",
+      "phrases": [
+        "fiazhassan1/lession_learned",
+        "Claude / Claude Code",
+        "Codex",
+        "must not self-approve or self-merge"
+      ]
+    }
+  ],
+  "required_links": [
+    {
+      "from": "AGENTS.md",
+      "to": "docs/AI-OPERATING-RULES.md"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "docs/PROJECT-ROLES.md"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "docs/AI-OPERATING-RULES.md"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "docs/PROJECT-ROLES.md"
+    }
+  ],
+  "exceptions": []
+}

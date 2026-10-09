@@ -19,16 +19,16 @@ Author/reviewer separation check (required before reviewing **or** merging): sta
 - Opening a PR or posting a comment is a **durable handoff**, not a trigger. No automatic AI review is configured or verified in any project inspected (Lessons Learned, GBOB Automation). An idle session does not start on its own.
 - The reviewer reviews when it is **invoked in its own session** with a prompt like the one below. It reads the PR and Issue directly through its GitHub connection.
 - Do not invent a reviewer username, and do not request a GitHub review from an account that is not a real, verified reviewer.
-- Fiaz should not have to copy technical content between tools. The only thing pasted into the reviewer's session is the short prompt; everything else lives in the PR/Issue.
+- Fiaz must not relay prompts or manually invoke the other AI as routine coordination. The author posts the request and evidence directly through the verified reviewer channel; missing execution trigger is a named BLOCKED gate, not a PO messenger task.
 
 ## Author steps
 
 1. Push the branch and open the PR from the repo's PR template, with the exact head SHA, acceptance criteria, commands run with pass/fail/skip results, CI link, risks, and schema/security impact.
 2. Comment once on the linked Issue with the PR link, head SHA and any blockers.
-3. Post the invocation prompt (below) as a PR comment so it is visible and reusable, and tell Fiaz in chat which AI must be invoked with it.
+3. Post the invocation request directly on the PR and verified review channel. Use an available authorized session/automation trigger when verified; otherwise record the missing trigger, next action and owner. Posting is not proof of review execution. Never ask Fiaz to copy technical prompts.
 4. Never self-approve or self-merge. After any new commit, post the new head SHA and ask for re-verification.
 
-## Invocation prompt (copy, fill in, paste into the reviewer's session)
+## Direct invocation request (author posts through verified tools)
 
 ```
 Independently review PR #<n> at head <full SHA> in <owner>/<repo>.
@@ -51,3 +51,7 @@ Fall back to the project's documented handoff file (for GBOB: `CLAUDE_TO_CHATGPT
 ## Roles and merge rules differ by project
 
 Always read the target repo's current, merged SOP. Do not copy a role or merge rule from another repo or from an unmerged branch. For reference only (verify in each repo): Lessons Learned (merged SOP and docs/SHARED_AI_INTEGRATION_AND_ROLES.md): Claude develops, ChatGPT is BA/independent QA, and the independent AI QA reviewer merges after applicable gates. GBOB Automation's roles are reversed (ChatGPT develops, Claude reviews); its merge rule was not confirmed in a merged SOP, so check it there before acting.
+
+## Standing policy precedence
+
+Read [AI operating rules](AI-OPERATING-RULES.md) and [project roles](PROJECT-ROLES.md). Older manual relay examples are historical. GBOB's reviewer-merge rule is confirmed in its merged CLAUDE.md rule 8; inspect current source before acting. Preserve exact-head independent review and merge gates.
